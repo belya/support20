@@ -1,0 +1,2 @@
+module SupportSessionsHelper
+end
