@@ -45,9 +45,3 @@ RSpec.describe ServerStep, type: :model do
     should validate_presence_of(:action)
   end
 end
-
-RSpec.describe SupportStep, type: :model do
-  it "checks type" do
-    expect(subject.type).to eq("SupportStep")
-  end
-end

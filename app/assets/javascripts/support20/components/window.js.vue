@@ -4,8 +4,16 @@
     <button @click="createSession(message)">Create session</button>
   </div>
   <div v-else>
-    <component :is="step.type" :step="step"></component>
-    <button @click="predictStep()">Go to next step</button>
+    <div v-if="session.status == 'created'">
+        <component :is="step.type" :step="step"></component>
+        <button v-if="step.type != 'finish'" @click="predictStep()">Go to next step</button>
+    </div>
+    <div v-if="session.status == 'waiting'">
+      Dialog with support...
+    </div>
+    <div v-if="session.status == 'completed'">
+      Session is finished!
+    </div>
   </div>
 </template>
 <script>
@@ -19,11 +27,10 @@
     computed: Vuex.mapGetters(['session', 'step', 'messages']),
     methods: Vuex.mapActions(['createSession', 'predictStep']),
     components: {
-      alert: require('./alert'),
-      prompt: require('./prompt'),
-      server: require('./server'),
-      support: require('./support'),
-      finish: require('./finish')
+      alert: require('./steps/alert'),
+      prompt: require('./steps/prompt'),
+      server: require('./steps/server'),
+      finish: require('./steps/finish'),
     }
   }
 </script>

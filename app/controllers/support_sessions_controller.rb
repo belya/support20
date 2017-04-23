@@ -3,17 +3,18 @@ class SupportSessionsController < ApplicationController
   before_action :set_support_session, except: [:create]
 
   def create
-    @support_session = SupportSession.create
+    @support_session = SupportSession.create(step_ids: [predicted_step.id])
     @support_session.messages.create(message_params)
-    @support_session.step_ids.push predicted_step.id
     render :show
   end
 
   def show
   end
 
-  def predict
-    @support_session.step_ids.push predicted_step.id
+  def take_step
+    if @support_session.created?
+      @support_session.update(step_ids: @support_session.step_ids + [predicted_step.id])
+    end
     render :show
   end
 
@@ -47,6 +48,12 @@ class SupportSessionsController < ApplicationController
     end
 
     def predicted_step
-      FactoryGirl.create([:alert_step, :prompt_step, :server_step, :finish_step, :support_step].sample)
+      FactoryGirl.create([:alert_step, :prompt_step, :server_step, :finish_step].sample)
+    end
+
+    def await_if_finish_step
+      if !@support_session.step_ids.empty? && Step.find(@support_session.step_ids.last).type == "FinishStep"
+        @support_session.await!
+      end
     end
 end

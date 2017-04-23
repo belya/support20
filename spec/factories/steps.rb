@@ -16,5 +16,4 @@ FactoryGirl.define do
   end
 
   factory :finish_step, class: FinishStep, parent: :step
-  factory :support_step, class: SupportStep, parent: :step
 end

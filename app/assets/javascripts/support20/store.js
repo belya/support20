@@ -13,19 +13,27 @@ module.exports = new Vuex.Store({
       .then(function (response) {
         updater.commit('UPDATE_SESSION', response.data)
       })
-      .catch(function (error) {
-        console.log(error);
-      });
     },
     predictStep: function(updater, message) {
-      axios.post('/support_sessions/' + updater.state.session.id + '/predict', {})
+      axios.post('/support_sessions/' + updater.state.session.id + '/take_step', {})
       .then(function (response) {
         updater.commit('UPDATE_SESSION', response.data)
       })
-      .catch(function (error) {
-        console.log(error);
-      });
-    }
+    },
+
+    await: function(updater) {
+      axios.post('/support_sessions/' + updater.state.session.id + '/wait', {})
+      .then(function (response) {
+        updater.commit('UPDATE_SESSION', response.data)
+      })
+    },
+
+    finish: function(updater) {
+      axios.post('/support_sessions/' + updater.state.session.id + '/finish', {})
+      .then(function (response) {
+        updater.commit('UPDATE_SESSION', response.data)
+      })
+    },
   },
   mutations: {
     UPDATE_SESSION: function(state, session) {

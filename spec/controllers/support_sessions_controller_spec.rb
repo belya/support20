@@ -5,7 +5,7 @@ RSpec.describe SupportSessionsController, type: :controller do
 
   context "show" do
     let :support_session do
-      create :support_session
+      create :support_session, values: {key: "value"}
     end
 
     context "invalid" do
@@ -26,7 +26,6 @@ RSpec.describe SupportSessionsController, type: :controller do
           create(:prompt_step).id,
           create(:server_step).id,
           create(:finish_step).id,
-          create(:support_step).id
         ]
         support_session.save
         get :show, params: {id: support_session}
@@ -47,6 +46,12 @@ RSpec.describe SupportSessionsController, type: :controller do
 
         it "checks text" do
           expect_json('messages.0', text: Message.first.text)
+        end
+      end
+
+      context "values" do
+        it "checks value" do
+          expect_json('values', key: "value")
         end
       end
 
@@ -79,24 +84,26 @@ RSpec.describe SupportSessionsController, type: :controller do
   end
 
   context "create" do
-    before do
-      post :create, params: {message: {text: "Some message"}}
-    end
+    context "common" do
+      before do
+        post :create, params: {message: {text: "Some message"}}
+      end
 
-    it "checks session" do
-      expect(SupportSession.first).not_to be_nil
-    end
+      it "checks session" do
+        expect(SupportSession.first).not_to be_nil
+      end
 
-    it "checks message" do
-      expect(Message.first.text).to eq("Some message")
-    end
+      it "checks message" do
+        expect(SupportSession.first.messages.first.text).to eq("Some message")
+      end
 
-    it "checks step" do
-      expect(Step.first).not_to be_nil
-    end
+      it "checks step" do
+        expect(SupportSession.first.step_ids.length).to eq(1)
+      end
 
-    it "checks render" do
-      expect(subject).to render_template("support_sessions/show")
+      it "checks render" do
+        expect(subject).to render_template("support_sessions/show")
+      end
     end
   end
 
@@ -110,7 +117,7 @@ RSpec.describe SupportSessionsController, type: :controller do
     end
 
     it "checks message" do
-      expect(Message.first.text).to eq("Some message")
+      expect(SupportSession.first.messages.first.text).to eq("Some message")
     end
 
     it "checks render" do
@@ -119,22 +126,44 @@ RSpec.describe SupportSessionsController, type: :controller do
   end
 
   context "take a step and predict another" do
-    #TODO take previous test
-    #TODO predict step test
-    let :support_session do
-      create :support_session, step_ids: [create(:alert_step).id]
+    context "created session" do
+      let :support_session do
+        create :support_session
+      end
+
+      before do
+        post :take_step, params: {id: support_session.id}
+      end
+
+      it "checks step" do
+        expect(SupportSession.first.step_ids.length).to eq(1)
+      end
+
+      it "checks no take step method" do
+
+      end
+
+      it "checks render" do
+        expect(subject).to render_template("support_sessions/show")
+      end
     end
 
-    before do
-      post :take_step, params: {id: support_session.id}
-    end
+    context "not created session" do
+      let :support_session do
+        create :support_session, status: :waiting
+      end
 
-    it "checks step" do
-      expect(Step.first).not_to be_nil
-    end
+      before do
+        post :take_step, params: {id: support_session.id}
+      end
 
-    it "checks render" do
-      expect(subject).to render_template("support_sessions/show")
+      it "checks step" do
+        expect(SupportSession.first.step_ids).to be_empty
+      end
+
+      it "checks take step method" do
+
+      end
     end
   end
 
@@ -198,8 +227,25 @@ RSpec.describe SupportSessionsController, type: :controller do
     end
   end
 
-  context "make predicted step" do
-    it "checks step" do
+  context "take predicted step" do
+    it "checks support step" do
+    end
+
+    it "checks server step" do
+    end
+
+    it "checks prompt step" do
     end
   end
 end
+
+
+# Был предсказан support step - показать диалог (клиент), завершить сессию (сервер)
+# Был предсказан server step - показать сообщение (клиент), сделать серверное действие (сервер)
+# Был предсказан prompt step - пользователь вводит значение (клиент), значение сохраняется в сессии (сервер)
+
+
+# Вывод - действие выполняется в начале take step, если сессия имеет статус не created, действие не предсказывается 
+
+# Проблема - если предсказан support step, сессия до отправки сообщения все еще имеет статус created
+# Решение - переводить в статус waiting сессию с support step после действия take_step, сделать редирект с create на take_step

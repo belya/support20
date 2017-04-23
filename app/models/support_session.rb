@@ -2,6 +2,7 @@ class SupportSession < ApplicationRecord
   include AASM
   has_many :messages
   serialize :step_ids, Array
+  serialize :values, Hash
   enum status: [:created, :completed, :waiting, :attached, :manual_completed]
   aasm column: :status, enum: true, whiny_transitions: false do
     state :created, :initial => true
