@@ -21,6 +21,10 @@ RSpec.describe SupportSession, type: :model do
     expect(subject.step_ids).to eq([])
   end
 
+  it "checks values" do
+    expect(subject.values).to eq({})
+  end
+
   context "statuses" do
     context "await event" do
       it "checks from created" do

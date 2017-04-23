@@ -118,13 +118,15 @@ RSpec.describe SupportSessionsController, type: :controller do
     end
   end
 
-  context "predict next step" do
+  context "take a step and predict another" do
+    #TODO take previous test
+    #TODO predict step test
     let :support_session do
-      create :support_session
+      create :support_session, step_ids: [create(:alert_step).id]
     end
 
     before do
-      post :predict, params: {id: support_session.id}
+      post :take_step, params: {id: support_session.id}
     end
 
     it "checks step" do

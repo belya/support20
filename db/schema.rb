@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20170421082725) do
   end
 
   create_table "support_sessions", force: :cascade do |t|
+    t.string   "values"
     t.string   "step_ids"
     t.integer  "status",     default: 0
     t.datetime "created_at",             null: false

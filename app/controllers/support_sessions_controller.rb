@@ -1,4 +1,5 @@
 class SupportSessionsController < ApplicationController
+  skip_before_filter :verify_authenticity_token
   before_action :set_support_session, except: [:create]
 
   def create
@@ -46,6 +47,6 @@ class SupportSessionsController < ApplicationController
     end
 
     def predicted_step
-      FactoryGirl.create(:alert_step)
+      FactoryGirl.create([:alert_step, :prompt_step, :server_step, :finish_step, :support_step].sample)
     end
 end

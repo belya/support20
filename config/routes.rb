@@ -8,4 +8,6 @@ Rails.application.routes.draw do
       post :finish
     end
   end
+
+  root "demo#welcome"
 end

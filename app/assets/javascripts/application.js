@@ -13,4 +13,8 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
-//= require_tree .
+//= require cable
+
+window.onload = function() {
+  require("support20/main").initialize("#support20");
+}
