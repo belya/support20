@@ -1,5 +1,5 @@
 <template>
-  <div>Server action: {{step.action}}</div>
+  <div>Server action: {{step.action_name}}</div>
 </template>
 <script>
   module.exports = {

@@ -1,0 +1,1 @@
+Rails.configuration.model_path = Rails.root.join("lib", "test_model.py")

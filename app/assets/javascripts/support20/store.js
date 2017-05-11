@@ -9,7 +9,7 @@ module.exports = new Vuex.Store({
   },
   actions: {
     createSession: function(updater, message) {
-      axios.post('/support_sessions', {message: {text: message}})
+      axios.post('/support_sessions', {message: {text: message}, link: window.location.href})
       .then(function (response) {
         updater.commit('UPDATE_SESSION', response.data)
       })

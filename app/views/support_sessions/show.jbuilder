@@ -5,7 +5,7 @@ json.messages @support_session.messages do |message|
   json.text message.text
 end
 
-json.steps Step.where(id: @support_session.step_ids) do |step|
+json.steps @support_session.steps do |step|
   json.id step.id
   json.type step.type.underscore.split("_").first
   json.partial! "support_sessions/#{step.type.underscore}", step: step

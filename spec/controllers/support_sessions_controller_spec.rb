@@ -3,9 +3,13 @@ require 'rails_helper'
 RSpec.describe SupportSessionsController, type: :controller do
   render_views
 
+  before do
+    create :alert_step, dataset_id: 1
+  end
+
   context "show" do
     let :support_session do
-      create :support_session, values: {key: "value"}
+      create :support_session
     end
 
     context "invalid" do
@@ -21,13 +25,14 @@ RSpec.describe SupportSessionsController, type: :controller do
     context "valid" do
       before do
         create :message, support_session: support_session
-        support_session.step_ids += [
-          create(:alert_step).id,
-          create(:prompt_step).id,
-          create(:server_step).id,
-          create(:finish_step).id,
+        support_session.steps += [
+          create(:alert_step),
+          create(:prompt_step),
+          create(:server_step),
+          create(:finish_step),
         ]
         support_session.save
+        support_session.support_session_steps.first.update(values: {key: "value"})
         get :show, params: {id: support_session}
       end
 
@@ -57,15 +62,15 @@ RSpec.describe SupportSessionsController, type: :controller do
 
       context "steps" do
         it "checks id" do
-          expect_json('steps.0', id: Step.first.id)
+          expect_json('steps.0', id: Step.second.id)
         end
 
         it "checks type" do
-          expect_json('steps.0', type: Step.first.type.underscore.split("_")[0])
+          expect_json('steps.0', type: Step.second.type.underscore.split("_")[0])
         end
 
         it "checks text" do
-          expect_json('steps.0', text: AlertStep.first.text)
+          expect_json('steps.0', text: AlertStep.second.text)
         end
 
         it "checks value type" do
@@ -85,11 +90,16 @@ RSpec.describe SupportSessionsController, type: :controller do
 
   context "create" do
     before do
-      post :create, params: {message: {text: "Some message"}}
+      create :page, link: "/some_link"
+      post :create, params: {message: {text: "Some message"}, link: Page.first.link}
     end
 
     it "checks session" do
       expect(SupportSession.first).not_to be_nil
+    end
+
+    it "checks page" do
+      expect(SupportSession.first).to have_attributes(page: Page.first)
     end
 
     it "checks message" do
@@ -97,7 +107,7 @@ RSpec.describe SupportSessionsController, type: :controller do
     end
 
     it "checks step" do
-      expect(SupportSession.first.step_ids.length).to eq(1)
+      expect(SupportSession.first.steps.length).to eq(1)
     end
 
     it "checks render" do
@@ -126,18 +136,18 @@ RSpec.describe SupportSessionsController, type: :controller do
   context "take a step and predict another" do
     context "created session" do
       let :server_step do
-        create :server_step, action: "support_session.values['server_key'] = 'server_value'; support_session.save"
+        create :server_step, action: "step(support_session).update(values: {'server_key' => 'server_value'})"
       end
 
       let :support_session do
-        create :support_session, step_ids: [server_step.id], values: {"old_key" => "old_value"}
+        create :support_session, steps: [server_step]
       end
 
       before do
         allow(subject).to receive(:predicted_step) do
           create :alert_step
         end
-        post :take_step, params: {id: support_session.id, values: {"new_key" => "new_value"}}
+        post :take_step, params: {id: support_session.id}
       end
 
       it "checks predicted step" do
@@ -145,7 +155,7 @@ RSpec.describe SupportSessionsController, type: :controller do
       end
 
       it "checks new step" do
-        expect(SupportSession.first.step_ids.length).to eq(2)
+        expect(SupportSession.first.steps.length).to eq(2)
       end
 
       it "checks step evaluation" do
@@ -167,7 +177,7 @@ RSpec.describe SupportSessionsController, type: :controller do
       end
 
       it "checks step" do
-        expect(SupportSession.first.step_ids).to be_empty
+        expect(SupportSession.first.steps).to be_empty
       end
     end
   end
@@ -227,24 +237,65 @@ RSpec.describe SupportSessionsController, type: :controller do
   end
 
   context "predicted step" do
-    it "checks step" do
-      expect(subject.send(:predicted_step)).not_to be_nil
+    let :support_session do
+      create :support_session
     end
-  end
 
-  context "take server step" do
-    it "checks server step" do
+    before do
+      support_session.messages.push create(:message, support_session: support_session)
+      support_session.steps.push create(:server_step, dataset_id: 0)
+      support_session.support_session_steps.first.update(condition: true)
+      subject.instance_variable_set(:@support_session, support_session)
+      subject.send(:predicted_step)
+    end
+
+    let :forecast_parameters do
+      parameters = []
+      File.open("tmp/file_with_params.txt", "r").each_line do |line|
+        parameters = line.split(", ")
+      end
+      parameters
+    end
+
+    it "checks step" do
+      step = Step.find_by(dataset_id: %x(python #{Rails.configuration.model_path}))
+      expect(subject.send(:predicted_step)).to eq(step)
+    end
+
+    context "parameters" do
+      it "checks page id" do
+        expect(forecast_parameters[0]).to include(support_session.page.dataset_id.to_s)
+      end
+
+      it "checks query" do
+        expect(forecast_parameters[1]).to eq("'#{support_session.messages.first.text}'")
+      end
+
+      it "checks previous action" do
+        expect(forecast_parameters[2]).to include(support_session.steps.last.dataset_id.to_s)
+      end
+
+      it "checks empty previous action" do
+        support_session.steps.clear
+        subject.send(:predicted_step)
+        expect(forecast_parameters[2]).to include("-1")
+      end
+
+      it "checks true condition" do
+        expect(forecast_parameters[3]).to include("1")
+      end
+
+      it "checks false condition" do
+        support_session.support_session_steps.first.update(condition: false)
+        subject.send(:predicted_step)
+        expect(forecast_parameters[3]).to include("-1")
+      end
+
+      it "checks empty condition" do
+        support_session.steps.clear
+        subject.send(:predicted_step)
+        expect(forecast_parameters[3]).to include("0")
+      end
     end
   end
 end
-
-
-# Был предсказан support step - показать диалог (клиент), завершить сессию (сервер)
-# Был предсказан server step - показать сообщение (клиент), сделать серверное действие (сервер)
-# Был предсказан prompt step - пользователь вводит значение (клиент), значение сохраняется в сессии (сервер)
-
-
-# Вывод - действие выполняется в начале take step, если сессия имеет статус не created, действие не предсказывается 
-
-# Проблема - если предсказан support step, сессия до отправки сообщения все еще имеет статус created
-# Решение - переводить в статус waiting сессию с support step после действия take_step, сделать редирект с create на take_step

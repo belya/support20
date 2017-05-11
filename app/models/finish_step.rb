@@ -1,3 +1,2 @@
 class FinishStep < Step
-  
 end
