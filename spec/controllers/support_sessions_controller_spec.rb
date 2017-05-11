@@ -72,38 +72,36 @@ RSpec.describe SupportSessionsController, type: :controller do
           expect_json('steps.1', value_type: PromptStep.first.value_type)
         end
 
-        it "checks value" do
-          expect_json('steps.1', value: PromptStep.first.value)
+        it "checks value name" do
+          expect_json('steps.1', value_name: PromptStep.first.value_name)
         end
 
         it "checks action" do
-          expect_json('steps.2', action: ServerStep.first.action)
+          expect_json('steps.2', action_name: ServerStep.first.action_name)
         end
       end
     end
   end
 
   context "create" do
-    context "common" do
-      before do
-        post :create, params: {message: {text: "Some message"}}
-      end
+    before do
+      post :create, params: {message: {text: "Some message"}}
+    end
 
-      it "checks session" do
-        expect(SupportSession.first).not_to be_nil
-      end
+    it "checks session" do
+      expect(SupportSession.first).not_to be_nil
+    end
 
-      it "checks message" do
-        expect(SupportSession.first.messages.first.text).to eq("Some message")
-      end
+    it "checks message" do
+      expect(SupportSession.first.messages.first.text).to eq("Some message")
+    end
 
-      it "checks step" do
-        expect(SupportSession.first.step_ids.length).to eq(1)
-      end
+    it "checks step" do
+      expect(SupportSession.first.step_ids.length).to eq(1)
+    end
 
-      it "checks render" do
-        expect(subject).to render_template("support_sessions/show")
-      end
+    it "checks render" do
+      expect(subject).to render_template("support_sessions/show")
     end
   end
 
@@ -127,20 +125,31 @@ RSpec.describe SupportSessionsController, type: :controller do
 
   context "take a step and predict another" do
     context "created session" do
+      let :server_step do
+        create :server_step, action: "support_session.values['server_key'] = 'server_value'; support_session.save"
+      end
+
       let :support_session do
-        create :support_session
+        create :support_session, step_ids: [server_step.id], values: {"old_key" => "old_value"}
       end
 
       before do
-        post :take_step, params: {id: support_session.id}
+        allow(subject).to receive(:predicted_step) do
+          create :alert_step
+        end
+        post :take_step, params: {id: support_session.id, values: {"new_key" => "new_value"}}
       end
 
-      it "checks step" do
-        expect(SupportSession.first.step_ids.length).to eq(1)
+      it "checks predicted step" do
+        expect(subject).to have_received(:predicted_step)
       end
 
-      it "checks no take step method" do
+      it "checks new step" do
+        expect(SupportSession.first.step_ids.length).to eq(2)
+      end
 
+      it "checks step evaluation" do
+        expect(SupportSession.first.values["server_key"]).to eq("server_value")
       end
 
       it "checks render" do
@@ -159,10 +168,6 @@ RSpec.describe SupportSessionsController, type: :controller do
 
       it "checks step" do
         expect(SupportSession.first.step_ids).to be_empty
-      end
-
-      it "checks take step method" do
-
       end
     end
   end
@@ -227,14 +232,8 @@ RSpec.describe SupportSessionsController, type: :controller do
     end
   end
 
-  context "take predicted step" do
-    it "checks support step" do
-    end
-
+  context "take server step" do
     it "checks server step" do
-    end
-
-    it "checks prompt step" do
     end
   end
 end

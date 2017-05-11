@@ -22,11 +22,12 @@ ActiveRecord::Schema.define(version: 20170421082725) do
   create_table "steps", force: :cascade do |t|
     t.string   "type"
     t.text     "text"
-    t.string   "value"
+    t.string   "value_name"
     t.string   "value_type"
     t.string   "action"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "action_name"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "support_sessions", force: :cascade do |t|

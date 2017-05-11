@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe SupportSession, type: :model do
   subject do
-    create :support_session
+    create :support_session, step_ids: [create(:alert_step).id]
   end
 
   it "checks status" do
@@ -18,7 +18,16 @@ RSpec.describe SupportSession, type: :model do
   end
 
   it "checks step ids" do
-    expect(subject.step_ids).to eq([])
+    expect(subject.step_ids).to eq([AlertStep.first.id])
+  end
+
+  it "checks last step" do
+    expect(subject.last_step).to eq(AlertStep.first)
+  end
+
+  it "checks empty last step" do
+    subject.update(step_ids: [])
+    expect(subject.last_step.class).to eq(Step)
   end
 
   it "checks values" do

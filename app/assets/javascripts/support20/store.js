@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 module.exports = new Vuex.Store({
   state: {
-    session: null
+    session: null,
   },
   actions: {
     createSession: function(updater, message) {
@@ -14,8 +14,8 @@ module.exports = new Vuex.Store({
         updater.commit('UPDATE_SESSION', response.data)
       })
     },
-    predictStep: function(updater, message) {
-      axios.post('/support_sessions/' + updater.state.session.id + '/take_step', {})
+    predictStep: function(updater) {
+      axios.post('/support_sessions/' + updater.state.session.id + '/take_step', {value: updater.getters.step.value})
       .then(function (response) {
         updater.commit('UPDATE_SESSION', response.data)
       })

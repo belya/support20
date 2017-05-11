@@ -12,6 +12,7 @@ class SupportSessionsController < ApplicationController
   end
 
   def take_step
+    @support_session.last_step.evaluate(@support_session, params)
     if @support_session.created?
       @support_session.update(step_ids: @support_session.step_ids + [predicted_step.id])
     end

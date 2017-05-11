@@ -1,1 +1,1 @@
-json.action step.action
+json.action_name step.action_name

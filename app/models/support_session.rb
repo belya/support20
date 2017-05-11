@@ -21,4 +21,12 @@ class SupportSession < ApplicationRecord
       transitions from: :created, to: :completed
     end
   end
+
+  def last_step
+    if step_ids.empty?
+      Step.new
+    else
+      Step.find(step_ids.last) 
+    end
+  end
 end
