@@ -1,1 +1,1 @@
-Rails.configuration.model_path = Rails.root.join("lib", "test_model.py")
+Rails.configuration.model_url = "http://localhost:8080/predict"

@@ -8,6 +8,7 @@ class CreateSteps < ActiveRecord::Migration[5.0]
       t.string :value_type
       t.string :action
       t.string :action_name
+      t.string :description
       t.timestamps
     end
   end

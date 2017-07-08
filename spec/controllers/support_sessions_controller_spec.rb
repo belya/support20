@@ -91,7 +91,7 @@ RSpec.describe SupportSessionsController, type: :controller do
   context "create" do
     before do
       create :page, link: "/some_link"
-      post :create, params: {message: {text: "Some message"}, link: Page.first.link}
+      post :create, params: {jivo_id: "someid", message: {text: "Some message"}, link: Page.first.link}
     end
 
     it "checks session" do
@@ -100,6 +100,10 @@ RSpec.describe SupportSessionsController, type: :controller do
 
     it "checks page" do
       expect(SupportSession.first).to have_attributes(page: Page.first)
+    end
+
+    it "checks jivo id" do
+      expect(SupportSession.first).to have_attributes(jivo_id: "someid")
     end
 
     it "checks message" do
@@ -237,64 +241,61 @@ RSpec.describe SupportSessionsController, type: :controller do
   end
 
   context "predicted step" do
-    let :support_session do
+    before do
       create :support_session
+      create :message, support_session: SupportSession.first
+      create :support_session_step, support_session: SupportSession.first, step: create(:alert_step)
+      subject.instance_variable_set(:@support_session, SupportSession.first)
     end
 
-    before do
-      support_session.messages.push create(:message, support_session: support_session)
-      support_session.steps.push create(:server_step, dataset_id: 0)
-      support_session.support_session_steps.first.update(condition: true)
-      subject.instance_variable_set(:@support_session, support_session)
-      subject.send(:predicted_step)
+    let :support_session do
+      SupportSession.first
     end
 
     let :forecast_parameters do
-      parameters = []
-      File.open("tmp/file_with_params.txt", "r").each_line do |line|
-        parameters = line.split(", ")
-      end
-      parameters
+      subject.send(:parameters)
     end
 
-    it "checks step" do
-      step = Step.find_by(dataset_id: %x(python #{Rails.configuration.model_path}))
-      expect(subject.send(:predicted_step)).to eq(step)
+    it "checks request" do
+      subject.send(:predict)
+      stub_request(:get, Rails.configuration.model_url)
+        .to_return { |request| expect(request).to eq(forecast_parameters) }
     end
 
     context "parameters" do
       it "checks page id" do
-        expect(forecast_parameters[0]).to include(support_session.page.dataset_id.to_s)
+        expect(forecast_parameters[:page]).to eq(support_session.page.dataset_id)
       end
 
       it "checks query" do
-        expect(forecast_parameters[1]).to eq("'#{support_session.messages.first.text}'")
+        expect(forecast_parameters[:query]).to eq(support_session.messages.first.text)
       end
 
       it "checks previous action" do
-        expect(forecast_parameters[2]).to include(support_session.steps.last.dataset_id.to_s)
+        expect(forecast_parameters[:previous_action]).to eq(support_session.steps.last.dataset_id)
       end
 
       it "checks empty previous action" do
         support_session.steps.clear
         subject.send(:predicted_step)
-        expect(forecast_parameters[2]).to include("-1")
+        expect(forecast_parameters[:previous_action]).to eq(-1)
       end
 
       it "checks true condition" do
-        expect(forecast_parameters[3]).to include("1")
+        support_session.support_session_steps.first.update(condition: true)
+        expect(forecast_parameters[:condition]).to eq(1)
       end
 
       it "checks false condition" do
         support_session.support_session_steps.first.update(condition: false)
         subject.send(:predicted_step)
-        expect(forecast_parameters[3]).to include("-1")
+        expect(forecast_parameters[:condition]).to eq(-1)
       end
 
       it "checks empty condition" do
         support_session.steps.clear
         subject.send(:predicted_step)
-        expect(forecast_parameters[3]).to include("0")
+        expect(forecast_parameters[:condition]).to eq(0)
       end
     end
   end

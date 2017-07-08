@@ -34,10 +34,25 @@ module.exports = new Vuex.Store({
         updater.commit('UPDATE_SESSION', response.data)
       })
     },
+
+    write: function(updater, message) {
+      axios.post('/support_sessions/' + updater.state.session.id + '/write', {message: {text: message}})
+      .then(function (response) {
+        updater.commit('UPDATE_SESSION', response.data)
+      })
+    },
+
+    show: function(updater) {
+      axios.get('/support_sessions/' + updater.state.session.id, {})
+      .then(function (response) {
+        updater.commit('UPDATE_SESSION', response.data)
+      })
+    }
   },
   mutations: {
     UPDATE_SESSION: function(state, session) {
       state.session = session;
+      session.status = "waiting";
     }
   },
   getters: {

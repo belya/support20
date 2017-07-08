@@ -62,6 +62,8 @@ group :test do
   gem 'poltergeist'
   gem 'airborne'
   gem 'rails-controller-testing'
+  gem 'webmock'
+  gem 'rest-client'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

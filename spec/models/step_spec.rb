@@ -25,8 +25,14 @@ RSpec.describe Step, type: :model do
   end
 
   it "checks default dataset id" do
-    subject.update(dataset_id: nil)
-    expect(subject.dataset_id).to eq(subject.id)
+    create :alert_step, dataset_id: nil
+    expect(Step.last.dataset_id).not_to be_nil
+  end
+
+  it "checks differend dataset ids" do
+    create :alert_step, dataset_id: nil
+    create :alert_step, dataset_id: nil
+    expect(Step.first.dataset_id).not_to eq(Step.last.dataset_id)
   end
 
   it "checks evaluate method" do
@@ -111,6 +117,10 @@ RSpec.describe ServerStep, type: :model do
 
   before do
     support_session.steps.push subject
+  end
+
+  it "checks description presence" do
+    should validate_presence_of(:description)
   end
 
   it "checks type" do

@@ -16,5 +16,6 @@
 //= require cable
 
 window.onload = function() {
-  require("support20/main").initialize("#support20");
+  // require("support20/main").initialize("#support20");
+  require("support20/main").chatra.initialize();
 }

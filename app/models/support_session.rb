@@ -4,6 +4,7 @@ class SupportSession < ApplicationRecord
   has_many :support_session_steps
   has_many :steps, through: :support_session_steps
   belongs_to :page
+  validates :jivo_id, presence: true
   enum status: [:created, :completed, :waiting, :attached, :manual_completed]
   aasm column: :status, enum: true, whiny_transitions: false do
     state :created, :initial => true

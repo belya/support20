@@ -13,6 +13,7 @@ FactoryGirl.define do
 
   factory :server_step, class: ServerStep, parent: :step do
     action_name "Kill 'em all"
+    description "Some description"
     action "puts 'some'"
   end
 

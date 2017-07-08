@@ -9,7 +9,7 @@
         <button v-if="step.type != 'finish'" @click="predictStep()">Go to next step</button>
     </div>
     <div v-if="session.status == 'waiting'">
-      Dialog with support...
+      <chat :session=session></chat>
     </div>
     <div v-if="session.status == 'completed'">
       Session is finished!
@@ -31,6 +31,7 @@
       prompt: require('./steps/prompt'),
       server: require('./steps/server'),
       finish: require('./steps/finish'),
+      chat: require('./chat'),
     }
   }
 </script>

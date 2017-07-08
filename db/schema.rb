@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 20170511101142) do
     t.string   "value_type"
     t.string   "action"
     t.string   "action_name"
+    t.string   "description"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end
@@ -50,6 +51,7 @@ ActiveRecord::Schema.define(version: 20170511101142) do
   create_table "support_sessions", force: :cascade do |t|
     t.integer  "status",     default: 0
     t.integer  "page_id"
+    t.string   "jivo_id"
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
