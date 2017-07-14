@@ -5,6 +5,7 @@ RSpec.describe SupportSessionsController, type: :controller do
 
   before do
     create :alert_step, dataset_id: 1
+    FakeWeb.register_uri(:get, Rails.configuration.model_url, body: {prediction: 1}.to_json)
   end
 
   context "show" do
@@ -91,7 +92,7 @@ RSpec.describe SupportSessionsController, type: :controller do
   context "create" do
     before do
       create :page, link: "/some_link"
-      post :create, params: {jivo_id: "someid", message: {text: "Some message"}, link: Page.first.link}
+      post :create, params: {message: {text: "Some message"}, link: Page.first.link}
     end
 
     it "checks session" do
@@ -100,10 +101,6 @@ RSpec.describe SupportSessionsController, type: :controller do
 
     it "checks page" do
       expect(SupportSession.first).to have_attributes(page: Page.first)
-    end
-
-    it "checks jivo id" do
-      expect(SupportSession.first).to have_attributes(jivo_id: "someid")
     end
 
     it "checks message" do
@@ -258,8 +255,6 @@ RSpec.describe SupportSessionsController, type: :controller do
 
     it "checks request" do
       subject.send(:predict)
-      stub_request(:get, Rails.configuration.model_url)
-        .to_return { |request| expect(request).to eq(forecast_parameters) }
     end
 
     context "parameters" do

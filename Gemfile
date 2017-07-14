@@ -62,7 +62,8 @@ group :test do
   gem 'poltergeist'
   gem 'airborne'
   gem 'rails-controller-testing'
-  gem 'webmock'
+  gem "fakeweb"
+  gem "webmock"
   gem 'rest-client'
 end
 

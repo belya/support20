@@ -17,10 +17,6 @@ RSpec.describe SupportSession, type: :model do
     should have_many(:messages)
   end
 
-  it "checks jivo id presence" do
-    should validate_presence_of(:jivo_id)
-  end
-
   it "checks page" do
     should belong_to(:page)
   end

@@ -42,8 +42,7 @@ class SupportSessionsController < ApplicationController
   private
     def session_params
       {
-        page: Page.find_by(link: params[:link]), 
-        jivo_id: params[:jivo_id]
+        page: Page.find_by(link: params[:link])
       }
     end
 

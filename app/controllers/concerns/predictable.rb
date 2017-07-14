@@ -7,7 +7,8 @@ module Predictable
     end
 
     def predict
-      RestClient.get(Rails.configuration.model_url, parameters)
+      body = RestClient.get(Rails.configuration.model_url, body: parameters.to_json).body
+      Step.find_by(dataset_id: JSON.parse(body)["prediction"])
     end
 
     def parameters
