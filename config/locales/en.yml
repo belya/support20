@@ -20,4 +20,8 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  steps:
+    alert: "%{text}"
+    prompt: "Please, enter %{value_name}. It should have %{value_type} form"
+    server: "Please, wait. We are on the way to %{action_name}, it will take some seconds..."
+    finish: "That's all our bot can do for you. Was it helpful? If no, our operators are already in touch!"

@@ -1,3 +1,0 @@
-class SupportStep < Step
-  
-end

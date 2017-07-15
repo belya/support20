@@ -35,12 +35,16 @@ gem 'jbuilder', '~> 2.5'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+gem "browserify-rails"
 gem 'aasm'
+gem 'rest-client'
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
   gem 'factory_girl_rails'
+  gem "ultrahook"
 end
 
 group :development do
@@ -61,6 +65,8 @@ group :test do
   gem 'poltergeist'
   gem 'airborne'
   gem 'rails-controller-testing'
+  gem "fakeweb"
+  gem "webmock"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

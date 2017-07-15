@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170421082725) do
+ActiveRecord::Schema.define(version: 20170511101142) do
 
   create_table "messages", force: :cascade do |t|
     t.integer  "support_session_id"
@@ -19,21 +19,44 @@ ActiveRecord::Schema.define(version: 20170421082725) do
     t.datetime "updated_at",         null: false
   end
 
-  create_table "steps", force: :cascade do |t|
-    t.string   "type"
-    t.text     "text"
-    t.string   "value"
-    t.string   "value_type"
-    t.string   "action"
+  create_table "pages", force: :cascade do |t|
+    t.integer  "dataset_id"
+    t.string   "link"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  create_table "steps", force: :cascade do |t|
+    t.string   "type"
+    t.integer  "dataset_id"
+    t.text     "text"
+    t.string   "value_name"
+    t.string   "value_type"
+    t.string   "action"
+    t.string   "action_name"
+    t.string   "description"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "support_session_steps", force: :cascade do |t|
+    t.integer  "step_id"
+    t.integer  "support_session_id"
+    t.string   "values"
+    t.boolean  "condition"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
   create_table "support_sessions", force: :cascade do |t|
-    t.string   "step_ids"
-    t.integer  "status",     default: 0
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.integer  "status",           default: 0
+    t.integer  "page_id"
+    t.string   "jivo_id"
+    t.string   "chatra_client_id"
+    t.string   "chatra_agent_id"
+    t.string   "chatra_chat_id"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
   end
 
 end

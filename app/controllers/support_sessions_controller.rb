@@ -1,18 +1,21 @@
 class SupportSessionsController < ApplicationController
+  include Predictable
+  skip_before_filter :verify_authenticity_token
   before_action :set_support_session, except: [:create]
 
   def create
-    @support_session = SupportSession.create
+    @support_session = SupportSession.create(session_params)
     @support_session.messages.create(message_params)
-    @support_session.step_ids.push predicted_step.id
+    @support_session.steps.push(predicted_step)
     render :show
   end
 
   def show
   end
 
-  def predict
-    @support_session.step_ids.push predicted_step.id
+  def take_step
+    @support_session.last_step.evaluate(@support_session, params)
+    @support_session.steps.push(predicted_step) if @support_session.created?
     render :show
   end
 
@@ -37,15 +40,17 @@ class SupportSessionsController < ApplicationController
   end
 
   private
+    def session_params
+      {
+        page: Page.find_by(link: params[:link])
+      }
+    end
+
     def message_params
       params.require(:message).permit(:text)
     end
 
     def set_support_session
       @support_session = SupportSession.find(params[:id])
-    end
-
-    def predicted_step
-      FactoryGirl.create(:alert_step)
     end
 end

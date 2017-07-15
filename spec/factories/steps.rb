@@ -7,14 +7,15 @@ FactoryGirl.define do
   end
 
   factory :prompt_step, class: PromptStep, parent: :step do
-    value "Some value"
+    value_name "Some value"
     value_type "String"
   end
 
   factory :server_step, class: ServerStep, parent: :step do
-    action "Kill 'em all"
+    action_name "Kill 'em all"
+    description "Some description"
+    action "puts 'some'"
   end
 
   factory :finish_step, class: FinishStep, parent: :step
-  factory :support_step, class: SupportStep, parent: :step
 end

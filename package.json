@@ -1,0 +1,17 @@
+{
+  "name": "support20",
+  "dependencies": {
+    "axios": "^0.16.1",
+    "browserify": "^14.0.0",
+    "browserify-incremental": "^3.1.0",
+    "coffeeify": "^2.1.0",
+    "jquery": "^3.2.1",
+    "vue": "^2.2.6",
+    "vueify": "^9.4.1",
+    "vuex": "^2.3.1"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 0.10"
+  }
+}

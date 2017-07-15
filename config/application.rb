@@ -14,5 +14,6 @@ module Support20
     config.generators do |g|
       g.test_framework :rspec
     end
+    config.browserify_rails.commandline_options = "-t vueify --extension=\".js.vue\""
   end
 end

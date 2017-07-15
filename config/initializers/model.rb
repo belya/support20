@@ -1,0 +1,1 @@
+Rails.configuration.model_url = "http://localhost:8080/predict"
