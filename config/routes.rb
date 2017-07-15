@@ -10,7 +10,6 @@ Rails.application.routes.draw do
   end
 
   namespace :chatra do
-    post :init
     post :take_step
   end
 

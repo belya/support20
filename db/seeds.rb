@@ -6,4 +6,4 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 Page.create(link: "http://localhost:3000/", dataset_id: 1)
-ServerStep.create(action_name: "Print string", action: "puts 'string'", dataset_id: 1)
+AlertStep.create(text: "Some text", dataset_id: 1)
