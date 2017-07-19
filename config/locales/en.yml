@@ -30,6 +30,10 @@ en:
         alert: "There is an error after update"
       destroy:
         notice: "Step was deleted successfully"
+  scope:
+    steps:
+      new: "New step"
+      edit: "Edit step"
   steps:
     alert: "%{text}"
     prompt: "Please, enter %{value_name}. It should have %{value_type} form"

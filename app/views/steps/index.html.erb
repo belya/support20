@@ -1,0 +1,9 @@
+<% @steps.each do |step| %>
+  <div class="step <%= step_type(step) %>">
+    <%= render "steps/index/#{step_type(step)}", step: step %>
+    <% if step_type(step) != "finish" %>
+      <%= link_to t("scope.steps.edit"), edit_step_url(step) %>
+    <% end %>
+  </div>
+<% end %>
+<%= link_to t("scope.steps.new"), new_step_url %>

@@ -60,7 +60,8 @@ RSpec.describe ChatraController, type: :controller do
 
       it "checks first message" do
         expect(SupportSession.first.messages.first).to have_attributes(
-          text: body[:messages][0][:text]
+          text: body[:messages][0][:text],
+          client: true
         )
       end
 
@@ -116,6 +117,20 @@ RSpec.describe ChatraController, type: :controller do
         it "checks value param for prompt step" do
           expect(subject.send(:params)[:value]).to eq(body[:messages][0][:text])
         end
+
+        it "checks client message" do
+          expect(SupportSession.first.messages.first).to have_attributes(
+            text: body[:messages][0][:text],
+            client: true
+          )
+        end
+
+        it "checks agent message" do
+          expect(SupportSession.first.messages.last).to have_attributes(
+            text: AlertStep.first.text,
+            client: false
+          )
+        end
       end
 
       context "last message is from agent" do
@@ -140,6 +155,14 @@ RSpec.describe ChatraController, type: :controller do
           expect {
             post :take_step, params: body
           }.not_to change{SupportSession.last.steps.length}
+        end
+
+        it "checks agent message" do
+          post :take_step, params: body
+          expect(SupportSession.last.messages.first).to have_attributes(
+            text: body[:messages][0][:text],
+            client: false
+          )
         end
       end
     end

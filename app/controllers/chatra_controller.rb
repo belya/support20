@@ -19,6 +19,7 @@ class ChatraController < ApplicationController
     end
 
     def send_message
+      save_message
       RestClient.post(
         Rails.configuration.chatra[:send], 
         {
@@ -31,6 +32,13 @@ class ChatraController < ApplicationController
       )
     end
 
+    def save_message
+      @support_session.messages.create({
+        text: translate_step(@support_session.last_step),
+        client: false
+      })
+    end
+
     def session_params
       {
         page: Page.last,
@@ -41,7 +49,8 @@ class ChatraController < ApplicationController
 
     def message_params
       {
-        text: params[:messages].last[:text]
+        text: params[:messages].last[:text],
+        client: client_message?
       }
     end
 
