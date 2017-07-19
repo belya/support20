@@ -20,6 +20,16 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  flash:
+    steps:
+      create:
+        notice: "Step was created successfully"
+        alert: "There is an error after create"
+      update:
+        notice: "Step was updated successfully"
+        alert: "There is an error after update"
+      destroy:
+        notice: "Step was deleted successfully"
   steps:
     alert: "%{text}"
     prompt: "Please, enter %{value_name}. It should have %{value_type} form"

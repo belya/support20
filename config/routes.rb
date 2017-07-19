@@ -13,5 +13,7 @@ Rails.application.routes.draw do
     post :take_step
   end
 
+  resources :steps
+
   root "demo#welcome"
 end

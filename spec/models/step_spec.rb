@@ -127,10 +127,6 @@ RSpec.describe ServerStep, type: :model do
     expect(subject.type).to eq("ServerStep")
   end
 
-  it "checks action presence" do
-    should validate_presence_of(:action)
-  end
-
   it "checks action method" do
     subject.evaluate(support_session, {})    
     expect(support_session.support_session_steps.first.values[:email]).to eq("someemail@mail.com")
