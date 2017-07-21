@@ -1,7 +1,8 @@
 class SupportSession < ApplicationRecord
   include AASM
   has_many :messages
-  has_many :support_session_steps
+  has_many :support_session_steps, inverse_of: :support_session
+  accepts_nested_attributes_for :support_session_steps, allow_destroy: true
   has_many :steps, through: :support_session_steps
   belongs_to :page
   enum status: [:created, :completed, :waiting, :attached, :manual_completed]

@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   end
 
   resources :steps
+  resources :support_session_steps
 
   root "demo#welcome"
 end

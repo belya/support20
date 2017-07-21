@@ -26,7 +26,11 @@ RSpec.describe SupportSession, type: :model do
   end
 
   it "checks support session steps" do
-    should have_many(:support_session_steps)
+    should have_many(:support_session_steps).inverse_of(:support_session)
+  end
+
+  it "checks nested attributes for support session steps" do
+    should accept_nested_attributes_for(:support_session_steps).allow_destroy(true)
   end
 
   it "checks last step" do
