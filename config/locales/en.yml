@@ -30,10 +30,19 @@ en:
         alert: "There is an error after update"
       destroy:
         notice: "Step was deleted successfully"
+
+    support_session_steps:
+      update:
+        notice: "Session was updated successfully"
+        alert: "There is an error after update"
+      destroy:
+        notice: "Session was deleted successfully"
   scope:
     steps:
       new: "New step"
       edit: "Edit step"
+      destroy: "Destroy step"
+      confirm_destroy: "Do you want to delete step?"
   steps:
     alert: "%{text}"
     prompt: "Please, enter %{value_name}. It should have %{value_type} form"

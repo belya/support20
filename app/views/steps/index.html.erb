@@ -3,6 +3,7 @@
     <%= render "steps/index/#{step_type(step)}", step: step %>
     <% if step_type(step) != "finish" %>
       <%= link_to t("scope.steps.edit"), edit_step_url(step) %>
+      <%= link_to t("scope.steps.destroy"), step_url(step), method: :delete, data: {confirm: I18n.t('scope.steps.confirm_destroy')} %>
     <% end %>
   </div>
 <% end %>

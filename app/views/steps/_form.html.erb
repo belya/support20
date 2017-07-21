@@ -1,0 +1,15 @@
+<%= simple_form_for @step.becomes(Step) do |f| %>
+  <%= f.input :type, collection: step_types %>
+  <div class="step AlertStep">
+    <%= f.input :text %>
+  </div>
+  <div class="step PromptStep">
+    <%= f.input :value_name %>
+    <%= f.input :value_type %>
+  </div>
+  <div class="step ServerStep">
+    <%= f.input :action_name %>
+    <%= f.input :description %>
+  </div>
+  <%= f.submit "Save" %>
+<% end %>

@@ -1,4 +1,15 @@
 require 'capybara/poltergeist'
+
+Capybara.register_driver :poltergeist do |app|
+  Capybara::Poltergeist::Driver.new(app, 
+    phantomjs: Rails.root.join("bin", "phantomjs").to_s, 
+    timeout: 100,
+    mode: 'w', 
+    charset: 'UTF-8', 
+    encoding: 'UTF8'
+  )
+end
+
 Capybara.javascript_driver = :poltergeist
 
 RSpec.configure do |config| 
